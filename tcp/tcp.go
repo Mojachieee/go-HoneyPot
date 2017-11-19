@@ -14,7 +14,7 @@ type Server struct {
 
 // NewServer creates a new tcp server
 func NewServer() *Server {
-	ports := []string{"80", "8080", "1", "2"}
+	ports := []string{"8992", "1280"}
 	return &Server{ports}
 }
 
@@ -45,6 +45,15 @@ func (t *Server) Start() {
 	fmt.Println("TCP Server Stopped")
 }
 
-func handleConnection(con net.Conn) {
+func handleConnection(conn net.Conn) {
 	fmt.Println("connection")
+	data := make([]byte, 4096)
+	n, err := conn.Read(data)
+	if err != nil {
+		log.Println(err)
+		conn.Close()
+		return
+	}
+	fmt.Printf("Received data from %v, of length %v data is %v", conn.RemoteAddr(), n, data[:n])
+	conn.Close()
 }
