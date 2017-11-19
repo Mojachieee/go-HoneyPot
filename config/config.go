@@ -8,11 +8,11 @@ import (
 
 // Config is the struct for all configurable data
 type Config struct {
-	DBConfig DatabaseConfig `json:"db"`
+	DBConfig Database `json:"db"`
 }
 
-// DatabaseConfig is the config struct for the database
-type DatabaseConfig struct {
+// Database is the config struct for the database
+type Database struct {
 	Host     string `json:"host"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
