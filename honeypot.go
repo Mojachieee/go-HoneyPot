@@ -1,8 +1,15 @@
 package main
 
-import "github.com/mojachieee/go-honeypot/tcp"
+import (
+	"github.com/mojachieee/go-HoneyPot/config"
+	"github.com/mojachieee/go-HoneyPot/database"
+	"github.com/mojachieee/go-HoneyPot/tcp"
+)
 
 func main() {
-	tcpServer := tcp.NewServer()
-	tcpServer.Start()
+	config := config.Read()
+	db := database.InitDatabase(config.DB)
+	defer db.Close()
+	tcpServer := tcp.NewServer(config.TCP.Ports)
+	tcpServer.Start(db)
 }
