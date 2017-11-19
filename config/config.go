@@ -17,6 +17,7 @@ type Database struct {
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Port     string `json:"port"`
 }
 
 // Read reads the configuration file and returns a struct of it
