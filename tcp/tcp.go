@@ -16,8 +16,7 @@ type Server struct {
 }
 
 // NewServer creates a new tcp server
-func NewServer() *Server {
-	ports := []string{"8992", "1280"}
+func NewServer(ports []string) *Server {
 	return &Server{ports}
 }
 
