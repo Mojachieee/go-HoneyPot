@@ -5,6 +5,9 @@ import (
 	"log"
 	"net"
 	"sync"
+	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 // Server is the tcp server struct
@@ -19,11 +22,11 @@ func NewServer() *Server {
 }
 
 // Start starts the tcp server
-func (t *Server) Start() {
+func (t *Server) Start(db *gorm.DB) {
 	var wg sync.WaitGroup
 	wg.Add(len(t.Ports))
 	for _, port := range t.Ports {
-		go func(port string, wg *sync.WaitGroup) {
+		go func(port string, wg *sync.WaitGroup, db *gorm.DB) {
 			fmt.Printf("Listening on tcp port: %v\n", port)
 			listen, err := net.Listen("tcp", ":"+port)
 			if err != nil {
@@ -37,15 +40,15 @@ func (t *Server) Start() {
 					log.Fatal(err)
 					// handle error
 				}
-				go handleConnection(conn)
+				go handleConnection(conn, db)
 			}
-		}(port, &wg)
+		}(port, &wg, db)
 	}
 	wg.Wait()
 	fmt.Println("TCP Server Stopped")
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, db *gorm.DB) {
 	fmt.Println("connection")
 	data := make([]byte, 4096)
 	n, err := conn.Read(data)
@@ -54,6 +57,19 @@ func handleConnection(conn net.Conn) {
 		conn.Close()
 		return
 	}
-	fmt.Printf("Received data from %v, of length %v data is %v", conn.RemoteAddr(), n, data[:n])
-	conn.Close()
+	defer conn.Close()
+	fmt.Printf("Received data from %v, of length %v data is %v\n", conn.RemoteAddr(), n, data[:n])
+	remHost, remPort, err := net.SplitHostPort(conn.RemoteAddr().String())
+	if err != nil {
+		fmt.Printf("Failed to split remote host and port: %v\n", err)
+		return
+	}
+	locHost, locPort, err := net.SplitHostPort(conn.LocalAddr().String())
+	if err != nil {
+		fmt.Printf("Failed to split remote host and port: %v\n", err)
+		return
+	}
+	str := fmt.Sprintf(`INSERT INTO honeyinfo (Date, InIp, InPort, DestIP, DestPort, SessionID, DataLength)VALUES ("%v", "%v", "%v", "%v", "%v", "%v", "%v")`,
+		time.Now().Format("20060102150405"), remHost, remPort, locHost, locPort, 0, n)
+	db.Exec(str)
 }
