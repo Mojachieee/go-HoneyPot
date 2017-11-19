@@ -18,13 +18,13 @@ func NewServer() *Server {
 	return &Server{ports}
 }
 
-// Start starts the tcp honeypot
+// Start starts the tcp server
 func (t *Server) Start() {
 	var wg sync.WaitGroup
 	wg.Add(len(t.Ports))
 	for _, port := range t.Ports {
 		go func(port string, wg *sync.WaitGroup) {
-			fmt.Printf("Listening on port: %v\n", port)
+			fmt.Printf("Listening on tcp port: %v\n", port)
 			listen, err := net.Listen("tcp", ":"+port)
 			if err != nil {
 				log.Println(err)
