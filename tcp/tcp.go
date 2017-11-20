@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/mojachieee/go-HoneyPot/config"
 )
 
 // Server is the tcp server struct
@@ -21,11 +22,11 @@ func NewServer(ports []string) *Server {
 }
 
 // Start starts the tcp server
-func (t *Server) Start(db *gorm.DB) {
+func (t *Server) Start(db *gorm.DB, cfg config.Database) {
 	var wg sync.WaitGroup
 	wg.Add(len(t.Ports))
 	for _, port := range t.Ports {
-		go func(port string, wg *sync.WaitGroup, db *gorm.DB) {
+		go func(port string, wg *sync.WaitGroup, db *gorm.DB, cfg config.Database) {
 			fmt.Printf("Listening on tcp port: %v\n", port)
 			listen, err := net.Listen("tcp", ":"+port)
 			if err != nil {
@@ -39,15 +40,15 @@ func (t *Server) Start(db *gorm.DB) {
 					log.Fatal(err)
 					// handle error
 				}
-				go handleConnection(conn, db)
+				go handleConnection(conn, db, cfg)
 			}
-		}(port, &wg, db)
+		}(port, &wg, db, cfg)
 	}
 	wg.Wait()
 	fmt.Println("TCP Server Stopped")
 }
 
-func handleConnection(conn net.Conn, db *gorm.DB) {
+func handleConnection(conn net.Conn, db *gorm.DB, cfg config.Database) {
 	fmt.Println("connection")
 	data := make([]byte, 4096)
 	n, err := conn.Read(data)
@@ -68,7 +69,7 @@ func handleConnection(conn net.Conn, db *gorm.DB) {
 		fmt.Printf("Failed to split remote host and port: %v\n", err)
 		return
 	}
-	str := fmt.Sprintf(`INSERT INTO honeyinfo (Date, InIp, InPort, DestIP, DestPort, SessionID, DataLength)VALUES ("%v", "%v", "%v", "%v", "%v", "%v", "%v")`,
-		time.Now().Format("20060102150405"), remHost, remPort, locHost, locPort, 0, n)
+	str := fmt.Sprintf(`INSERT INTO %v (Date, InIp, InPort, DestIP, DestPort, SessionID, DataLength)VALUES ("%v", "%v", "%v", "%v", "%v", "%v", "%v")`,
+		cfg.Table, time.Now().Format("20060102150405"), remHost, remPort, locHost, locPort, 0, n)
 	db.Exec(str)
 }

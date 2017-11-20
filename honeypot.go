@@ -11,5 +11,5 @@ func main() {
 	db := database.InitDatabase(config.DB)
 	defer db.Close()
 	tcpServer := tcp.NewServer(config.TCP.Ports)
-	tcpServer.Start(db)
+	tcpServer.Start(db, config.DB)
 }
