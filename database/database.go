@@ -11,13 +11,13 @@ import (
 )
 
 // InitDatabase is used to initialise the database connection and returns a pointer to the db
-func InitDatabase(config config.Database) *gorm.DB {
-	port := config.Port
+func InitDatabase(cfg config.Database) *gorm.DB {
+	port := cfg.Port
 	if port == "" {
 		port = "3306"
 	}
 	str := fmt.Sprintf("%v:%v@(%v:%v)/%v?charset=utf8&parseTime=True&loc=Local",
-		config.Username, config.Password, config.Host, port, config.Name)
+		cfg.Username, cfg.Password, cfg.Host, port, cfg.Name)
 	db, err := gorm.Open("mysql", str)
 	if err != nil {
 		log.Fatal(err)

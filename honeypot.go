@@ -7,9 +7,9 @@ import (
 )
 
 func main() {
-	config := config.Read()
-	db := database.InitDatabase(config.DB)
+	cfg := config.Read()
+	db := database.InitDatabase(cfg.DB)
 	defer db.Close()
-	tcpServer := tcp.NewServer(config.TCP.Ports)
-	tcpServer.Start(db, config.DB)
+	tcpServer := tcp.NewServer(cfg.TCP.Ports)
+	tcpServer.Start(db, cfg.DB)
 }
