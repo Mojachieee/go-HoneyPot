@@ -15,6 +15,7 @@ go-honeypot listens on specified ports for any communication. When an attacker a
     "db": {
         "host": "myhostname.com",
         "name": "mydatabasename",
+        "table": "mytablename",
         "username": "mydatabaseuser",
         "password": "mydatabasepassword"
     },
