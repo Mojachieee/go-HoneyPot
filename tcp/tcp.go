@@ -69,7 +69,7 @@ func handleConnection(conn net.Conn, db *gorm.DB, cfg config.Database) {
 		fmt.Printf("Failed to split remote host and port: %v\n", err)
 		return
 	}
-	str := fmt.Sprintf(`INSERT INTO %v (Date, InIp, InPort, DestIP, DestPort, SessionID, DataLength)VALUES ("%v", "%v", "%v", "%v", "%v", "%v", "%v")`,
-		cfg.Table, time.Now().Format("20060102150405"), remHost, remPort, locHost, locPort, 0, n)
+	str := fmt.Sprintf(`INSERT INTO %v (Date, InIp, InPort, DestIP, DestPort, DataLength)VALUES ("%v", "%v", "%v", "%v", "%v", "%v")`,
+		cfg.Table, time.Now().Format("20060102150405"), remHost, remPort, locHost, locPort, n)
 	db.Exec(str)
 }
