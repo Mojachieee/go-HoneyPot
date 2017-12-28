@@ -5,7 +5,7 @@ go-HoneyPot listens on specified ports for any communication. When an attacker a
 
 ## Running go-HoneyPot
 
-1. `git clone git@github.com:Mojachieee/go-HoneyPot.git`
+1. `git clone https://github.com/Mojachieee/go-HoneyPot`
 2. `cd go-HoneyPot`
 3. `go get`
 
