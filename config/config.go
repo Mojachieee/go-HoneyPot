@@ -27,6 +27,11 @@ type TCP struct {
 	Ports []string `json:"ports"`
 }
 
+// UDP is the config struct for the udp server
+type UDP struct {
+	Ports []string `json:"ports"`
+}
+
 // Read reads the configuration file and returns a struct of it
 func Read() Config {
 	file, err := os.Open("config.json")
